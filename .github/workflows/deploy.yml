@@ -35,7 +35,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/identity-providers-github-actions
-        aws-region: ${{ env.AWS_REGION }}
+        aws-region: ap-northeast-1
 
     # Login to Amazon ECR, then build, tag, and push a Docker image:
     - name: Login to Amazon ECR
@@ -59,15 +59,15 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        container-name: ${{ env.CONTAINER_NAME }}
+        task-definition: .aws/task-definition.json
+        container-name: moviefun
         image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: ${{ env.ECS_SERVICE }}
-        cluster: ${{ env.ECS_CLUSTER }}
+        service: moviefun
+        cluster: moviefun
         wait-for-service-stability: true
         
