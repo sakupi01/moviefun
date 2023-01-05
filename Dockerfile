@@ -21,6 +21,7 @@ WORKDIR /app
 COPY --from=builder /app  .
 
 ENV HOST 0.0.0.0
-EXPOSE 3000
+ENV PORT 8080
+EXPOSE 8080
 
 CMD [ "npm", "run", "start" ]
