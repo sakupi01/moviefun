@@ -24,10 +24,6 @@ jobs:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:oidc-provider/token.actions.githubusercontent.com
         aws-region: us-east-1
 
-    - name: Login to Amazon ECR Private
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-
     # Login to Amazon ECR Private, then build and push a Docker image:
     - name: Login to Amazon ECR
       id: login-ecr
