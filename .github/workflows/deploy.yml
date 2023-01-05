@@ -4,7 +4,15 @@ name: Deploy to Production
 on:
   push:
     branches: [ master ]
-
+env:
+  AWS_REGION: ap-northeast-1                   # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: moviefun          # set this to your Amazon ECR repository name
+  ECS_SERVICE: moviefun                 # set this to your Amazon ECS service name
+  ECS_CLUSTER: moviefun                 # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: .aws/task-definition.json # set this to the path to your Amazon ECS task definition
+                                               # file, e.g. .aws/task-definition.json
+  CONTAINER_NAME: moviefun           # set this to the name of the container in the
+                                               # containerDefinitions section of your task definition
 jobs:
   # To build docker image
   build:
@@ -27,7 +35,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/identity-providers-github-actions
-        aws-region: ap-northeast-1
+        aws-region: ${{ env.AWS_REGION }}
 
     # Login to Amazon ECR, then build, tag, and push a Docker image:
     - name: Login to Amazon ECR
@@ -38,7 +46,7 @@ jobs:
       id: build-image
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPOSITORY: moviefun
+        REPOSITORY: ${{ env.ECR_REPOSITORY }}
         IMAGE_TAG: ${{ github.sha }}
       # Build a docker container and
       # push it to ECR so that it can
@@ -52,15 +60,15 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: .aws/task-definition.json
-        container-name: moviefun
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: moviefun
-        cluster: moviefun
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
         
