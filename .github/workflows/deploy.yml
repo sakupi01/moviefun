@@ -1,11 +1,12 @@
 name: Deploy to Production
 
+# Surveillant master baranch
 on:
   push:
     branches: [ master ]
 
 jobs:
-
+  # To build docker image
   build:
     name: Build image
     runs-on: ubuntu-latest
@@ -21,7 +22,7 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
-        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:oidc-provider/token.actions.githubusercontent.com
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/identity-providers-github-actions
         aws-region: us-east-1
 
     # Login to Amazon ECR Private, then build and push a Docker image:
