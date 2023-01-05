@@ -34,6 +34,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -71,6 +72,17 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    extend(config, { isDev }) {
+      // ..
+      config.module.rules.push({
+        test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
+        loader: 'file-loader'
+      })
+      // Sets webpack's mode to development if `isDev` is true.
+      if (isDev) {
+        config.performance.hints = false
+      }
+    }
   },
   loading: '~/components/LoadingBar.vue',
 }
