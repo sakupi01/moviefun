@@ -16,16 +16,18 @@ jobs:
 
 
     steps:
-    - uses: actions/checkout@v3
 
-    # AWS Credentials
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # configure AWS Credentials using aws IAM
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/identity-providers-github-actions
         aws-region: us-east-1
 
-    # Login to Amazon ECR Private, then build and push a Docker image:
+    # Login to Amazon ECR, then build, tag, and push a Docker image:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
@@ -35,7 +37,11 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: moviefun
         IMAGE_TAG: ${{ github.sha }}
+      # Build a docker container and
+      # push it to ECR so that it can
+      # be deployed to ECS.
       run: |
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$REGISTRY/$REPOSITORY:$IMAGE_TAG"
         
