@@ -1,4 +1,9 @@
-# moviefun
+# moviefun (AWS CI/CD pipeline)
+
+⚠️ Important Notice: 
+Due to the AWS subscription expieration issue, the upstream version of Moviefun has been moved and deployed in the following repository.
+https://github.com/saku-1101/moviefun-cicd/
+
 
 ## Build Setup
 
